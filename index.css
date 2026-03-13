@@ -33,11 +33,25 @@ header {
     margin-bottom: 60px;
 }
 
+.logo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: lowercase;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 40px;
+    display: inline-block;
+    border: 2px solid var(--text-primary);
+    padding: 4px 12px;
+    border-radius: 8px;
+}
+
 h1 {
     font-size: 3rem;
     margin-bottom: 10px;
     background: linear-gradient(to right, #f8fafc, #94a3b8);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
