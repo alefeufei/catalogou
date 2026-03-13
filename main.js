@@ -1,7 +1,7 @@
 function sendWhatsApp(productName, imageUrl, sizes) {
     const phoneNumber = "5521972406574";
-    const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
-    const fullImageUrl = baseUrl + imageUrl;
+    const baseUrl = window.location.origin;
+    const fullImageUrl = `${baseUrl}/${imageUrl}`;
     
     const message = `Olá! Tenho interesse na *${productName}*.\n\n` +
                     `*Tamanhos:* ${sizes}\n\n` +
