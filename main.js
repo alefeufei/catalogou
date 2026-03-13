@@ -4,9 +4,8 @@ function sendWhatsApp(productName, imageUrl, sizes) {
     const fullImageUrl = baseUrl + imageUrl;
     
     const message = `Olá! Tenho interesse na *${productName}*.\n\n` +
-                    `*Tamanhos:* ${sizes}\n` +
-                    `*Link da Foto:* ${fullImageUrl}\n\n` +
-                    `Gostaria de saber mais sobre como encomendar!`;
+                    `*Tamanhos:* ${sizes}\n\n` +
+                    `*Foto do produto:* ${fullImageUrl}`;
     
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
