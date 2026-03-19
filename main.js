@@ -185,7 +185,7 @@ function prepareOrder(button, title, image) {
 }
 
 function sendWhatsApp(productName, imageUrl, size, quantity) {
-    const phoneNumber = "5521972406574";
+    const phoneNumber = "5521959435523";
     const baseUrl = window.location.origin;
     const fullImageUrl = `${baseUrl}/${imageUrl}`;
     
