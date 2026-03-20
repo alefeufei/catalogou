@@ -51,18 +51,16 @@ function renderPage(page) {
                 <h2 class="card-title">${model.title}</h2>
                 <p class="card-description">${model.description}</p>
                 
-                <div class="card-quantity">
-                    <span class="quantity-label">Quantidade</span>
-                    <input type="number" class="quantity-input" value="1" min="1" max="99">
-                </div>
-
                 <div class="card-sizes">
                     <span class="size-label">Escolha o Tamanho</span>
                     <div class="size-list">
-                        <span class="size-item" onclick="selectSize(this)">P</span>
-                        <span class="size-item" onclick="selectSize(this)">M</span>
-                        <span class="size-item" onclick="selectSize(this)">G</span>
-                        <span class="size-item" onclick="selectSize(this)">GG</span>
+                        <span class="size-item" onclick="selectSize(this, 'P')">P</span>
+                        <span class="size-item" onclick="selectSize(this, 'M')">M</span>
+                        <span class="size-item" onclick="selectSize(this, 'G')">G</span>
+                        <span class="size-item" onclick="selectSize(this, 'GG')">GG</span>
+                    </div>
+                    <div class="size-quantities">
+                        <!-- Quantidades por tamanho aparecerão aqui -->
                     </div>
                 </div>
                 <button class="btn-order" onclick="prepareOrder(this, '${model.title}', '${model.image}')">
@@ -71,7 +69,6 @@ function renderPage(page) {
                     </svg>
                     Encomendar agora
                 </button>
-
             </div>
         `;
         grid.appendChild(article);
@@ -165,34 +162,70 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-function selectSize(element) {
-    const parent = element.parentElement;
-    parent.querySelectorAll('.size-item').forEach(item => item.classList.remove('selected'));
-    element.classList.add('selected');
+function selectSize(element, size) {
+    console.log(`Selecionando tamanho: ${size}`);
+    element.classList.toggle('selected');
+    const card = element.closest('.card');
+    if (!card) {
+        console.error('Card não encontrado');
+        return;
+    }
+    const quantityContainer = card.querySelector('.size-quantities');
+    if (!quantityContainer) {
+        console.error('Container de quantidades não encontrado');
+        return;
+    }
+    
+    if (element.classList.contains('selected')) {
+        console.log(`Adicionando input para tamanho: ${size}`);
+        // Criar item de quantidade para este tamanho
+        const sizeQtyItem = document.createElement('div');
+        sizeQtyItem.className = 'size-quantity-item';
+        sizeQtyItem.setAttribute('data-size', size);
+        sizeQtyItem.innerHTML = `
+            <span class="size-name">${size}:</span>
+            <input type="number" class="size-qty-input" value="1" min="1" max="99" />
+        `;
+        quantityContainer.appendChild(sizeQtyItem);
+    } else {
+        console.log(`Removendo input para tamanho: ${size}`);
+        // Remover item de quantidade para este tamanho
+        const itemToRemove = quantityContainer.querySelector(`.size-quantity-item[data-size="${size}"]`);
+        if (itemToRemove) {
+            itemToRemove.remove();
+        }
+    }
 }
 
 function prepareOrder(button, title, image) {
     const card = button.closest('.card');
-    const selectedSize = card.querySelector('.size-item.selected')?.textContent;
-    const quantity = card.querySelector('.quantity-input').value;
-
-    if (!selectedSize) {
-        alert('Por favor, selecione um tamanho!');
+    const quantityItems = card.querySelectorAll('.size-quantity-item');
+    
+    if (quantityItems.length === 0) {
+        alert('Por favor, selecione pelo menos um tamanho!');
         return;
     }
 
-    sendWhatsApp(title, image, selectedSize, quantity);
+    const selections = [];
+    quantityItems.forEach(item => {
+        const size = item.getAttribute('data-size');
+        const quantity = item.querySelector('.size-qty-input').value;
+        selections.push({ size, quantity });
+    });
+
+    sendWhatsApp(title, image, selections);
 }
 
-function sendWhatsApp(productName, imageUrl, size, quantity) {
+function sendWhatsApp(productName, imageUrl, selections) {
     const phoneNumber = "5521959435523";
     const baseUrl = window.location.origin;
     const fullImageUrl = `${baseUrl}/${imageUrl}`;
     
+    let sizesText = selections.map(s => `- ${s.size}: ${s.quantity}`).join('\n');
+    
     const message = `Olá! Quero encomendar:\n\n` +
                     `*Produto:* ${productName}\n` +
-                    `*Tamanho:* ${size}\n` +
-                    `*Quantidade:* ${quantity}\n\n` +
+                    `*Tamanhos e Quantidades:*\n${sizesText}\n\n` +
                     `*Foto:* ${fullImageUrl}`;
     
     const encodedMessage = encodeURIComponent(message);
